@@ -23,34 +23,49 @@
 	 <h3>Love something? Hate something? Let us know!</h3>
 		 Note : Fields marked with an asterisk(*) are mandatory
 		 <br><br>
-		 <form method="post" novalidate>
+		 <form id="myForm" method="post" novalidate>
 			<label>Title*:</label>
 			<input type="radio" name="title" id="miss" value="miss" required="required"/>Miss
 			<input type="radio" name="title" id="mr" value="mr" required="required"/>Mr.
 			<input type="radio" name="title" id="mrs" value="mrs" required="required"/>Mrs.
 			<br><br>
 			<label for="firstName">First Name*:</label>
-			<input type="text" name="firstName" id="firstName" placeholder="First Name" />	
+			<input type="text" name="firstName" id="firstName" placeholder="First Name" minlength="2" maxlength="20" required/>	
 			<br><br>
+			<div id="error_firstName" style="display: none; color:red;">
+				Invalid First Name format, Please emter a valid name.
+			</div>
 			
 
 			<label for="lastName">Last Name*:</label>
-			<input type="text" name="lastName" id="lastName" placeholder="Last Name" />
+			<input type="text" name="lastName" id="lastName" placeholder="Last Name" minlength="2" maxlength="20" required/>
 			<br><br>
+			<div id="error_lastName" style="display: none; color:red;">
+				Invalid Last Name format, Please emter a valid name.
+			</div>
 			
 
 			<label for="emailId">Email Id*:</label>
-			<input type="text" name="emailId" id="emailId" placeholder="yourname@domain.com" />
+			<input type="text" name="emailId" id="emailId" placeholder="yourname@domain.com" minlength="7" maxlength="40" required/>
 			<br><br>
+			<div id="error_emailId" style="display: none; color:red;">
+				Invalid Email Id format, Please emter a Email ID.
+			</div>
 			
 
 			<label for="phoneNumber">Phone Number*:</label>
-			<input type="text" name="phoneNumber" id="phoneNumber" placeholder="xxx-xxx-xxxx" />
+			<input type="text" name="phoneNumber" id="phoneNumber" placeholder="xxx-xxx-xxxx" minlength="10" maxlength="10" required/>
 			<br><br>
+			<div id="error_phoneNumber" style="display: none; color:red;">
+				Invalid Phone Number format, Please emter a valid Phone Number.
+			</div>
 			
-            <label for="zipcode">ZipCode*:</label>
-			<input type="text" name="zipcode" id="zipcode" placeholder="xxxxxx" />
+            <label for="zipCode">ZipCode*:</label>
+			<input type="text" name="zipcode" id="zipCode" placeholder="xxxxxx" minlength="5" maxlength="5" required/>
 			<br><br>
+			<div id="error_zipCode" style="display: none; color:red;">
+				Invalid Zipcode format, Please emter a valid Zipcode.
+			</div>
              
             <label for="zipcode">How did you hear*:</label>
 			<input type='checkbox' name="source" value="facebook" /> Facebook
@@ -69,6 +84,133 @@
  </div>
 
  <script>
+
+	let form = document.getElementById("myForm");
+	form.addEventListener("submit", submitted);
+
+
+	//setting initally false to all validity states
+	let validFirstName = false;
+	let validLastName = false;
+	let validEmailId = false;
+	let validPhoneNumber = false;
+	let validZipCode = false;
+
+	//setting regex expressions for each field
+	let regExFirstName = /^[a-zA-Z]+$/;
+	let regExLastName = /^[a-zA-Z]+$/;
+	let regExEmailId = /([\w\.]+)@([\w\.]+)\.(\w+)/;
+	let regExPhoneNumber = /\d{3}-?\d{3}-?\d{4}$/;
+	let regExZipCode = /\b\d{5}\b/;
+
+	//Adding event listener to all fields
+	let firstName = document.getElementById("firstName");
+	firstName.addEventListener("input", validate);
+
+	let lastName = document.getElementById("lastName");
+	lastName.addEventListener("input", validate);
+
+	let emailId = document.getElementById("emailId");
+	emailId.addEventListener("input", validate);
+
+	let phoneNumber = document.getElementById("phoneNumber");
+	phoneNumber.addEventListener("input", validate);
+
+	let zipCode = document.getElementById("zipCode");
+	zipCode.addEventListener("input", validate);
+
+	//validating function
+	function validate(e){
+		let value = e.target.value;
+		let type = this.id;
+		let em = "error_" + type;
+
+		switch(type){
+			case "firstName":
+				if(!value.trim().match(regExFirstName)){
+					document.getElementById(em).style.display = "block";
+					this.style.border = "2px solid red";
+					validFirstName = false;
+					console.log("valid first name:", validFirstName);
+				} else {
+					document.getElementById(em).style.display = "none";
+					this.style.border = "";
+					validFirstName = true;
+					console.log("valid first name", validFirstName)
+				} 
+				break;
+
+				
+				case "lastName":
+				if(!value.trim().match(regExLastName)){
+					document.getElementById(em).style.display = "block";
+					this.style.border = "2px solid red";
+					validLastName = false;
+					console.log("valid last name:", validLastName);
+				} else {
+					document.getElementById(em).style.display = "none";
+					this.style.border = "";
+					validLastName = true;
+					console.log("valid last name", validLastName)
+				} 
+				break;
+
+				case "emailId":
+				if(!value.trim().match(regExEmailId)){
+					document.getElementById(em).style.display = "block";
+					this.style.border = "2px solid red";
+					validEmailId = false;
+					console.log("valid Email ID:", validEmailId);
+				} else {
+					document.getElementById(em).style.display = "none";
+					this.style.border = "";
+					validEmailId = true;
+					console.log("valid Email ID", validEmailId)
+				} 
+				break;
+
+				case "phoneNumber":
+				if(!value.trim().match(regExPhoneNumber)){
+					document.getElementById(em).style.display = "block";
+					this.style.border = "2px solid red";
+					validPhoneNumber = false;
+					console.log("valid phone number:", validPhoneNumber);
+				} else {
+					document.getElementById(em).style.display = "none";
+					this.style.border = "";
+					validPhoneNumber = true;
+					console.log("valid phone number", validPhoneNumber)
+				} 
+				break;
+
+				case "zipCode":
+				if(!value.trim().match(regExZipCode)){
+					document.getElementById(em).style.display = "block";
+					this.style.border = "2px solid red";
+					validZipCode = false;
+					console.log("valid Zipcode:", validZipCode);
+				} else {
+					document.getElementById(em).style.display = "none";
+					this.style.border = "";
+					validZipCode = true;
+					console.log("valid Zipcode", validZipCode)
+				} 
+				break;		
+		}
+
+	}
+
+	//function called when press submit
+	function submitted(e){
+		e.preventDefault();
+		if(validFirstName && validLastName && validEmailId && validPhoneNumber && validZipCode){
+			alert("Data entered Successfully");
+		} else {
+			alert("Please enter details in valid format");
+		}
+	}
+
+
  
  </script>
 
