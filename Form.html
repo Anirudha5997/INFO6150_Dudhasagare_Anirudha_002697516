@@ -68,15 +68,15 @@
 			</div>
              
             <label for="zipcode">How did you hear*:</label>
-			<input type='checkbox' name="source" value="facebook" /> Facebook
-            <input type='checkbox' name="source" value="google" /> Google
-            <input type='checkbox' name="source" value="yelp" /> Yelp 
+			<input id="checkbox_FB" type='checkbox' name="source" value="facebook" /> Facebook
+            <input id="checkbox_Google" type='checkbox' name="source" value="google" /> Google
+            <input id="checkbox_Yelp" type='checkbox' name="source" value="yelp" /> Yelp 
 			<br><br> 
              
 			<label for="comments">Comments*:</label>
 			<textarea name="text" id="comments" placeholder="Your comments" rows="5" cols="25"></textarea>
 			<br><br>
-			<input type="Submit">
+			<input type="Submit" id="submit" disabled>
 			<input type="Reset">
 			<br><br>
 		 </form>
@@ -119,11 +119,41 @@
 	let zipCode = document.getElementById("zipCode");
 	zipCode.addEventListener("input", validate);
 
+	let radioState = false;
+	let checkboxState = false;
+	let textAreaState = false;
+
 	//validating function
 	function validate(e){
 		let value = e.target.value;
 		let type = this.id;
 		let em = "error_" + type;
+
+		let submit = document.getElementById("submit");
+
+		//setting radio button, checkbox and comment box state
+		let miss = document.getElementById("miss");
+		let mr = document.getElementById("mr");
+		let mrs = document.getElementById("mrs");
+
+		let checkbox_FB = document.getElementById("checkbox_FB");
+		let checkbox_Google = document.getElementById("checkbox_Google");
+		let checkbox_Yelp = document.getElementById("checkbox_Yelp")
+
+		let commentText = document.getElementById("comments").value;
+		
+		if(miss.checked || mrs.checked || mr.checked){
+			radioState = true;
+		} else radioState = false;
+
+		if(checkbox_FB.checked || checkbox_Google.checked || checkbox_Yelp.checked){
+			checkboxState = true;
+ 		} else checkboxState = false;
+
+		if(commentText === ""){
+			
+		} else textAreaState = true;
+
 
 		switch(type){
 			case "firstName":
@@ -198,19 +228,22 @@
 				break;		
 		}
 
+		
+
+		if(textAreaState && validFirstName && validLastName && validEmailId && validPhoneNumber && validZipCode && radioState && checkboxState){
+			submit.disabled = false;
+		} else submit.disabled = true
 	}
 
 	//function called when press submit
 	function submitted(e){
 		e.preventDefault();
-		if(validFirstName && validLastName && validEmailId && validPhoneNumber && validZipCode){
+		if(textAreaState && validFirstName && validLastName && validEmailId && validPhoneNumber && validZipCode && radioState && checkboxState){
 			alert("Data entered Successfully");
 		} else {
 			alert("Please enter details in valid format");
 		}
 	}
-
-
  
  </script>
 
