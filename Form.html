@@ -33,7 +33,7 @@
 			<input type="text" name="firstName" id="firstName" placeholder="First Name" minlength="2" maxlength="20" required/>	
 			<br><br>
 			<div id="error_firstName" style="display: none; color:red;">
-				Invalid First Name format, Please emter a valid name.
+				Invalid First Name format, Please enter a valid name.
 			</div>
 			
 
@@ -41,7 +41,7 @@
 			<input type="text" name="lastName" id="lastName" placeholder="Last Name" minlength="2" maxlength="20" required/>
 			<br><br>
 			<div id="error_lastName" style="display: none; color:red;">
-				Invalid Last Name format, Please emter a valid name.
+				Invalid Last Name format, Please enter a valid name.
 			</div>
 			
 
@@ -49,7 +49,7 @@
 			<input type="text" name="emailId" id="emailId" placeholder="yourname@domain.com" minlength="7" maxlength="40" required/>
 			<br><br>
 			<div id="error_emailId" style="display: none; color:red;">
-				Invalid Email Id format, Please emter a Email ID.
+				Invalid Email Id format, Please enter a Email ID.
 			</div>
 			
 
@@ -57,14 +57,14 @@
 			<input type="text" name="phoneNumber" id="phoneNumber" placeholder="xxx-xxx-xxxx" minlength="10" maxlength="10" required/>
 			<br><br>
 			<div id="error_phoneNumber" style="display: none; color:red;">
-				Invalid Phone Number format, Please emter a valid Phone Number.
+				Invalid Phone Number format, Please enter a valid Phone Number.
 			</div>
 			
             <label for="zipCode">ZipCode*:</label>
 			<input type="text" name="zipcode" id="zipCode" placeholder="xxxxxx" minlength="5" maxlength="5" required/>
 			<br><br>
 			<div id="error_zipCode" style="display: none; color:red;">
-				Invalid Zipcode format, Please emter a valid Zipcode.
+				Invalid Zipcode format, Please enter a valid Zipcode.
 			</div>
              
             <label for="zipcode">How did you hear*:</label>
@@ -76,8 +76,40 @@
 			<label for="comments">Comments*:</label>
 			<textarea name="text" id="comments" placeholder="Your comments" rows="5" cols="25"></textarea>
 			<br><br>
-			<input type="Submit" id="submit" disabled>
-			<input type="Reset">
+
+			<label for="cars">Choose a car:</label>
+			<select name="cars" id="cars">
+				<option value=""> Please select an option </option>
+				<option value="porsche">Porsche</option>
+				<option value="audi">Audi</option>
+				<option value="bmw">BMW</option>
+				<option value="mercedes">Mercedes</option>
+				<option value="lexus">Lexus</option>
+			</select>
+
+			  <br><br>
+			  <br><br>
+
+			  <label for="address1">Address Line 1*:</label>
+			  <input type="text" name="address1" id="address1" placeholder="Enter your Address" required/>
+			  <br><br>
+			  <div id="error_address1" style="display: none; color:red;">
+				  Invalid Address format, Please enter a valid address.
+			  </div>
+			<br><br>
+
+			<label for="address2">Address Line 2*:</label>
+			  <input type="text" name="address2" id="address2" placeholder="Enter your Address 2" required/>
+			  <br><br>
+			  <div id="error_address2" style="display: none; color:red;">
+				  Invalid Address format, Please enter a valid address.
+			  </div>
+			<br><br>
+
+			
+
+			<input type="Submit" id="submitBtn" disabled>
+			<input type="Reset" id="resetBtn">
 			<br><br>
 		 </form>
 	 </main>
@@ -87,21 +119,34 @@
 
 	let form = document.getElementById("myForm");
 	form.addEventListener("submit", submitted);
+	// form.addEventListener("change", submitbtn)
 
 
 	//setting initally false to all validity states
-	let validFirstName = false;
-	let validLastName = false;
-	let validEmailId = false;
-	let validPhoneNumber = false;
-	let validZipCode = false;
+	let defaultvalidCheck = {
+		validFirstName : false,
+		validLastName : false,
+		validEmailId: false,
+		validPhoneNumber: false,
+		validZipCode: false,
+		radioState : false,
+		checkboxState: false,
+		textAreaState: false,
+		validAddress1: false,
+		validAddress2: false,
+		}
+
+		let validCheck = {...defaultvalidCheck}
+	
 
 	//setting regex expressions for each field
 	let regExFirstName = /^[a-zA-Z]+$/;
 	let regExLastName = /^[a-zA-Z]+$/;
-	let regExEmailId = /([\w\.]+)@([\w\.]+)\.(\w+)/;
+	let regExEmailId = /([\w\.]+)@northeastern.edu/;
 	let regExPhoneNumber = /\d{3}-?\d{3}-?\d{4}$/;
 	let regExZipCode = /\b\d{5}\b/;
+	let regExAddress = /^[a-zA-Z0-9\s,'-]+$/
+	let regExAddress2 = /^[a-zA-Z0-9\s,'-]*$/
 
 	//Adding event listener to all fields
 	let firstName = document.getElementById("firstName");
@@ -119,9 +164,29 @@
 	let zipCode = document.getElementById("zipCode");
 	zipCode.addEventListener("input", validate);
 
-	let radioState = false;
-	let checkboxState = false;
-	let textAreaState = false;
+	let miss = document.getElementById("miss");
+	miss.addEventListener("input", validate)
+	let mr = document.getElementById("mr");
+	mr.addEventListener("input", validate)
+	let mrs = document.getElementById("mrs");
+	mrs.addEventListener("input", validate);
+
+	let checkbox_FB = document.getElementById("checkbox_FB");
+	checkbox_FB.addEventListener("input", validate)
+	let checkbox_Google = document.getElementById("checkbox_Google");
+	checkbox_Google.addEventListener("input", validate)
+	let checkbox_Yelp = document.getElementById("checkbox_Yelp")
+	checkbox_Yelp.addEventListener("input", validate)
+
+	let commentText = document.getElementById("comments");
+	commentText.addEventListener('input', validate)
+
+	let addressField1 = document.getElementById('address1');
+	addressField1.addEventListener('input', validate)
+
+	let addressField2 = document.getElementById('address2');
+	addressField2.addEventListener('input', validate)
+
 
 	//validating function
 	function validate(e){
@@ -129,59 +194,57 @@
 		let type = this.id;
 		let em = "error_" + type;
 
-		let submit = document.getElementById("submit");
-
 		//setting radio button, checkbox and comment box state
-		let miss = document.getElementById("miss");
-		let mr = document.getElementById("mr");
-		let mrs = document.getElementById("mrs");
+		// let miss = document.getElementById("miss");
+		// let mr = document.getElementById("mr");
+		// let mrs = document.getElementById("mrs");
 
-		let checkbox_FB = document.getElementById("checkbox_FB");
-		let checkbox_Google = document.getElementById("checkbox_Google");
-		let checkbox_Yelp = document.getElementById("checkbox_Yelp")
+		// let checkbox_FB = document.getElementById("checkbox_FB");
+		// let checkbox_Google = document.getElementById("checkbox_Google");
+		// let checkbox_Yelp = document.getElementById("checkbox_Yelp")
 
-		let commentText = document.getElementById("comments").value;
+		// let commentText = document.getElementById("comments").value;
+		
+		console.log(commentText.value)
 		
 		if(miss.checked || mrs.checked || mr.checked){
-			radioState = true;
-		} else radioState = false;
+			validCheck.radioState = true;
+		} else validCheck.radioState = false;
 
 		if(checkbox_FB.checked || checkbox_Google.checked || checkbox_Yelp.checked){
-			checkboxState = true;
- 		} else checkboxState = false;
+			validCheck.checkboxState = true;
+ 		} else validCheck.checkboxState = false;
 
-		if(commentText === ""){
-			
-		} else textAreaState = true;
-
+		 if(commentText.value === ""){
+			validCheck.textAreaState = false;
+			} else validCheck.textAreaState = true;
 
 		switch(type){
 			case "firstName":
 				if(!value.trim().match(regExFirstName)){
 					document.getElementById(em).style.display = "block";
 					this.style.border = "2px solid red";
-					validFirstName = false;
-					console.log("valid first name:", validFirstName);
+					validCheck.validFirstName = false;
+					console.log("valid first name:", validCheck.validFirstName);
 				} else {
 					document.getElementById(em).style.display = "none";
 					this.style.border = "";
-					validFirstName = true;
-					console.log("valid first name", validFirstName)
+					validCheck.validFirstName = true;
+					console.log("valid first name", validCheck.validFirstName)
 				} 
 				break;
-
-				
+		
 				case "lastName":
-				if(!value.trim().match(regExLastName)){
+				if(!value.trim().match(regExLastName) && !null){
 					document.getElementById(em).style.display = "block";
 					this.style.border = "2px solid red";
-					validLastName = false;
-					console.log("valid last name:", validLastName);
+					validCheck.validLastName = false;
+					console.log("valid last name:", validCheck.validLastName);
 				} else {
 					document.getElementById(em).style.display = "none";
 					this.style.border = "";
-					validLastName = true;
-					console.log("valid last name", validLastName)
+					validCheck.validLastName = true;
+					console.log("valid last name", validCheck.validLastName)
 				} 
 				break;
 
@@ -189,13 +252,13 @@
 				if(!value.trim().match(regExEmailId)){
 					document.getElementById(em).style.display = "block";
 					this.style.border = "2px solid red";
-					validEmailId = false;
-					console.log("valid Email ID:", validEmailId);
+					validCheck.validEmailId = false;
+					console.log("valid Email ID:", validCheck.validEmailId);
 				} else {
 					document.getElementById(em).style.display = "none";
 					this.style.border = "";
-					validEmailId = true;
-					console.log("valid Email ID", validEmailId)
+					validCheck.validEmailId = true;
+					console.log("valid Email ID", validCheck.validEmailId)
 				} 
 				break;
 
@@ -203,13 +266,13 @@
 				if(!value.trim().match(regExPhoneNumber)){
 					document.getElementById(em).style.display = "block";
 					this.style.border = "2px solid red";
-					validPhoneNumber = false;
-					console.log("valid phone number:", validPhoneNumber);
+					validCheck.validPhoneNumber = false;
+					console.log("valid phone number:", validCheck.validPhoneNumber);
 				} else {
 					document.getElementById(em).style.display = "none";
 					this.style.border = "";
-					validPhoneNumber = true;
-					console.log("valid phone number", validPhoneNumber)
+					validCheck.validPhoneNumber = true;
+					console.log("valid phone number", validCheck.validPhoneNumber)
 				} 
 				break;
 
@@ -217,34 +280,114 @@
 				if(!value.trim().match(regExZipCode)){
 					document.getElementById(em).style.display = "block";
 					this.style.border = "2px solid red";
-					validZipCode = false;
-					console.log("valid Zipcode:", validZipCode);
+					validCheck.validZipCode = false;
+					console.log("valid Zipcode:", validCheck.validZipCode);
 				} else {
 					document.getElementById(em).style.display = "none";
 					this.style.border = "";
-					validZipCode = true;
-					console.log("valid Zipcode", validZipCode)
+					validCheck.validZipCode = true;
+					console.log("valid Zipcode", validCheck.validZipCode)
 				} 
-				break;		
+				break;	
+
+				case "address1":
+				if(!value.trim().match(regExAddress)){
+					document.getElementById(em).style.display = "block";
+					this.style.border = "2px solid red";
+					validCheck.validAddress1 = false;
+					console.log("valid Address 1 :", validCheck.validAddress1);
+				} else {
+					document.getElementById(em).style.display = "none";
+					this.style.border = "";
+					validCheck.validAddress1 = true;
+					console.log("valid Address 1 :", validCheck.validAddress1)
+				} 
+				break;
+
+				//change logic 
+				case "address2":
+				if(!value.trim().match(regExAddress2)){
+					document.getElementById(em).style.display = "block";
+					this.style.border = "2px solid red";
+					validCheck.validAddress2 = false;
+					console.log("valid Address 1 :", validCheck.validAddress2);
+				} 
+				else {
+					document.getElementById(em).style.display = "none";
+					this.style.border = "";
+					validCheck.validAddress2 = true;
+					console.log("valid Address 1 :", validCheck.validAddress2)
+				} 
+				break;
+				
 		}
-
-		
-
-		if(textAreaState && validFirstName && validLastName && validEmailId && validPhoneNumber && validZipCode && radioState && checkboxState){
-			submit.disabled = false;
-		} else submit.disabled = true
+		submitbtn(e);
 	}
 
-	//function called when press submit
+	//function check submit
+	function submitbtn(){
+		let submit = document.getElementById("submitBtn");
+		if(Object.values(validCheck).every((ele) => ele)){
+			submitBtn.removeAttribute("disabled")
+			// submitBtn.disabled = false;
+		} else {
+			// submitBtn.disabled = true;
+			submitBtn.setAttribute("disabled", true)
+		}
+		
+	}
+
+	//function called when press submit, default behaviour reloads on submit
 	function submitted(e){
 		e.preventDefault();
-		if(textAreaState && validFirstName && validLastName && validEmailId && validPhoneNumber && validZipCode && radioState && checkboxState){
+		if(Object.values(validCheck).every((ele) => ele)){
 			alert("Data entered Successfully");
+			document.getElementById("resetBtn").click()
 		} else {
 			alert("Please enter details in valid format");
 		}
 	}
- 
+
+	document.getElementById("resetBtn").addEventListener("click", resetBtn);
+
+	function resetBtn(e){
+		validCheck = {...defaultvalidCheck};
+		submitbtn(e);
+	}
+
+	//select car options functionality
+	document.getElementById("cars").addEventListener("change", carOptions);
+	
+	function carOptions(e){
+		let Cars = { 
+			'porsche' : ['macan', 'cayenne'],
+			'audi' : ['q3', 'q5', 'q7'],
+			'bmw' : ['x3', 'x5', 'x7'],
+			'lexus' : ['RX SUV', 'LC 500h', 'Lexus NX'],
+			'mercedes' : ['AMG A45s', 'E-class', 'Maybach']	
+		};
+
+		let models = document.getElementById("models")
+		if(models){
+			models.innerHTML = '';
+		} else {
+			let newDiv = document.createElement("div")
+			newDiv.setAttribute('id', 'models')
+			newDiv.innerHTML = "blah blah";
+			selectElement = document.getElementById("cars")
+			selectElement.after(newDiv)
+		}
+
+
+
+
+
+		
+
+	}
+
+	
+
  </script>
 
  </body>
