@@ -106,8 +106,6 @@
 			  </div>
 			<br><br>
 
-			
-
 			<input type="Submit" id="submitBtn" disabled>
 			<input type="Reset" id="resetBtn">
 			<br><br>
@@ -134,6 +132,9 @@
 		textAreaState: false,
 		validAddress1: false,
 		validAddress2: false,
+		validCar: false,
+		validCarCheckbox: false,
+		validCarCheckboxText: false,
 		}
 
 		let validCheck = {...defaultvalidCheck}
@@ -201,11 +202,11 @@
 
 		// let checkbox_FB = document.getElementById("checkbox_FB");
 		// let checkbox_Google = document.getElementById("checkbox_Google");
-		// let checkbox_Yelp = document.getElementById("checkbox_Yelp")
+		// let checkbox_Yelp = document.getElementById("checkbox_Yelp");
 
 		// let commentText = document.getElementById("comments").value;
 		
-		console.log(commentText.value)
+		console.log(commentText.value);
 		
 		if(miss.checked || mrs.checked || mr.checked){
 			validCheck.radioState = true;
@@ -327,6 +328,7 @@
 	//function check submit
 	function submitbtn(){
 		let submit = document.getElementById("submitBtn");
+		console.log(validCheck)
 		if(Object.values(validCheck).every((ele) => ele)){
 			submitBtn.removeAttribute("disabled")
 			// submitBtn.disabled = false;
@@ -356,37 +358,108 @@
 	}
 
 	//select car options functionality
-	document.getElementById("cars").addEventListener("change", carOptions);
+	let carsSelect = document.getElementById("cars")
+	carsSelect.addEventListener("change", carOptions);
 	
 	function carOptions(e){
-		let Cars = { 
-			'porsche' : ['macan', 'cayenne'],
-			'audi' : ['q3', 'q5', 'q7'],
-			'bmw' : ['x3', 'x5', 'x7'],
+		let cars = { 
+			'porsche' : ['Macan', 'Cayenne'],
+			'audi' : ['Q3', 'Q5', 'Q7'],
+			'bmw' : ['X3', 'X5', 'X7'],
 			'lexus' : ['RX SUV', 'LC 500h', 'Lexus NX'],
 			'mercedes' : ['AMG A45s', 'E-class', 'Maybach']	
 		};
 
-		let models = document.getElementById("models")
-		if(models){
-			models.innerHTML = '';
+		if(e.target.value){
+			validCheck.validCar = true;
+		} else validCheck.validCar = false;
+
+		console.log(validCheck);
+
+		let carContainer = document.getElementById("carContainer");
+		if(carContainer){
+			carContainer.innerHTML = "";
 		} else {
-			let newDiv = document.createElement("div")
-			newDiv.setAttribute('id', 'models')
-			newDiv.innerHTML = "blah blah";
-			selectElement = document.getElementById("cars")
-			selectElement.after(newDiv)
-		}
+			carContainer = document.createElement("div");
+			carContainer.setAttribute('id', 'carContainer');
+			carsSelect.nextElementSibling.after(carContainer);	
+			carContainer.style.paddingLeft = "148px";
+		}	
 
-
-
-
-
-		
-
-	}
+		(cars[e.target.value] ?? []).forEach(element => {
+			let spanElement = document.createElement("span");
+			spanElement.setAttribute("id", "span_" + element);
+			let optionElement = document.createElement("input");
+			optionElement.setAttribute("type", "checkbox");
+			optionElement.setAttribute("value", element);
+			optionElement.id = "checkBox_" + element;
+			optionElement.addEventListener("change", checkBoxToggle);
+			spanElement.appendChild(optionElement);
+			spanElement.append(element);
+			spanElement.style.display = "block";
+			carContainer.appendChild(spanElement);
+		});
+		submitbtn();
+	}	
 
 	
+	function checkBoxToggle(e){
+		
+			let checkBoxElements = document.querySelectorAll('input[id^="checkBox_"]');
+			if(Array.from(checkBoxElements).filter(ele => ele.checked).length > 0){
+				validCheck.validCarCheckbox = true;
+			} else validCheck.validCarCheckbox = false;
+
+			
+
+			let em = document.getElementById("error_" + e.target.value);
+			let textBoxForModel = document.getElementById("textbox_" + e.target.value);
+			
+			if(textBoxForModel){
+				textBoxForModel.remove();
+				em.remove();
+
+			} else {
+				em = document.createElement('div');
+				em.id = "error_" + e.target.value;
+				em.style.display = "none";
+				em.style.color = "red";
+				em.textContent = "Invalid Selection Please try again";
+				em.style.border = "none";
+				textBoxForModel = document.createElement('input');
+				textBoxForModel.setAttribute("type", "text");
+				textBoxForModel.setAttribute("id", "textbox_" + e.target.value);
+				textBoxForModel.setAttribute("name", "textbox_" + e.target.value);
+				textBoxForModel.setAttribute("placeholder", "textbox_" + e.target.value);
+				textBoxForModel.minLength = 1;
+				let spanElement = document.getElementById("span_" + e.target.value);
+				textBoxForModel.addEventListener("input", validateCheckbox);
+				
+				spanElement.appendChild(textBoxForModel);
+				spanElement.appendChild(em);		
+			}
+			let textBoxElements = document.querySelectorAll('input[id^="textbox_"]');
+				if(Array.from(textBoxElements).every(ele => ele.value)){
+					validCheck.validCarCheckboxText = true;
+				} else validCheck.validCarCheckboxText = false;
+			submitbtn();
+		}
+
+		function validateCheckbox(e){
+			let textBoxElements = document.querySelectorAll('input[id^="textbox_"]');
+			if(Array.from(textBoxElements).every(ele => ele.value)){
+				validCheck.validCarCheckboxText = true;
+			} else validCheck.validCarCheckboxText = false;
+			console.log(e);
+			let em = document.getElementById("error_" + e.target.id.split("_")[1]);
+			console.log(em);
+			if(e.target.value){
+				em.style.display = "none"
+			} else {
+				em.style.display = "block"
+			}
+			submitbtn();
+		}
 
  </script>
 
