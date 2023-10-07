@@ -72,6 +72,9 @@
             <input id="checkbox_Google" type='checkbox' name="source" value="google" /> Google
             <input id="checkbox_Yelp" type='checkbox' name="source" value="yelp" /> Yelp 
 			<br><br> 
+			<div id="error_how" style="display: none; color:red;">
+				Please let us know.
+			</div>
              
 			<label for="comments">Comments*:</label>
 			<textarea name="text" id="comments" placeholder="Your comments" rows="5" cols="25"></textarea>
@@ -215,9 +218,16 @@
 			validCheck.radioState = true;
 		} else validCheck.radioState = false;
 
+		let error_how = document.getElementById("error_how");
 		if(checkbox_FB.checked || checkbox_Google.checked || checkbox_Yelp.checked){
 			validCheck.checkboxState = true;
- 		} else validCheck.checkboxState = false;
+			error_how.style.display = 'none';
+			error_how.border = "";
+ 		} else {
+			validCheck.checkboxState = false;
+			error_how.style.display = 'block';
+			error_how.border = "2px solid red";
+		}
 
 		 if(commentText.value === ""){
 			validCheck.textAreaState = false;
@@ -426,6 +436,7 @@
 		};
 
 		let error_car = document.getElementById('error_cars')
+
 		if(e.target.value){
 			validCheck.validCar = true;
 			error_car.style.display = 'none';
