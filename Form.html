@@ -6,7 +6,7 @@
     label {	float: left;
 			width: 150px;}
       #container{
-          width: 700px;
+          width: 70%;
           margin: auto;
           background-color: beige;
       } 
@@ -77,7 +77,7 @@
 			<textarea name="text" id="comments" placeholder="Your comments" rows="5" cols="25"></textarea>
 			<br><br>
 
-			<label for="cars">Choose a car:</label>
+			<label for="cars">Choose a car*:</label>
 			<select name="cars" id="cars">
 				<option value=""> Please select an option </option>
 				<option value="porsche">Porsche</option>
@@ -86,6 +86,9 @@
 				<option value="mercedes">Mercedes</option>
 				<option value="lexus">Lexus</option>
 			</select>
+			<div id="error_cars" style="display: none; color:red;">
+				Please select a car brand.
+			</div>
 
 			  <br><br>
 			  <br><br>
@@ -98,7 +101,7 @@
 			  </div>
 			<br><br>
 
-			<label for="address2">Address Line 2*:</label>
+			<label for="address2">Address Line 2:</label>
 			  <input type="text" name="address2" id="address2" placeholder="Enter your Address 2" required/>
 			  <br><br>
 			  <div id="error_address2" style="display: none; color:red;">
@@ -344,16 +347,68 @@
 		e.preventDefault();
 		if(Object.values(validCheck).every((ele) => ele)){
 			alert("Data entered Successfully");
-			document.getElementById("resetBtn").click()
+
+			let formData = {
+				"Title" : Array.from(document.querySelectorAll('input[name^="title"]')).filter(ele  => ele.checked)[0].value,
+				'Name' : `${firstName.value}, ${lastName.value}`,
+				"Contact" : `${emailId.value}, ${phoneNumber.value}`,
+				"Zipcode" : zipCode.value,
+				"How did you hear" : Array.from(document.querySelectorAll('input[name^="source"]')).filter(ele => ele.checked).map(ele => ele.value).join(", "),
+				"Comments" : commentText.value,
+				"Address1" : addressField1.value, 
+				"Address2" : addressField2.value,
+			}
+
+			console.log(formData);
+
+			let table = document.getElementById("myTable");
+			if(table){
+				let trRow = document.createElement("tr");
+				Object.values(formData).forEach(ele => {
+				let td = document.createElement("td");
+				td.innerText = ele;
+				trRow.appendChild(td);
+				table.appendChild(trRow);
+			})
+
+			} else {
+				let trHeader = document.createElement('tr');			
+				Object.keys(formData).forEach(ele => {
+				let th = document.createElement("th");
+				th.innerText = ele;
+				trHeader.appendChild(th);
+			})
+
+			table = document.createElement("table");
+			table.id = "myTable";
+			table.border = 1;
+			table.cellPadding = 5;
+			table.appendChild(trHeader);
+			form.after(table);
+
+			let trRow = document.createElement("tr");
+			Object.values(formData).forEach(ele => {
+				let td = document.createElement("td");
+				td.innerText = ele;
+				trRow.appendChild(td);
+				table.appendChild(trRow);
+			})
+		}
+
+			document.getElementById("resetBtn").click();
 		} else {
 			alert("Please enter details in valid format");
 		}
+
+
 	}
 
 	document.getElementById("resetBtn").addEventListener("click", resetBtn);
-
+	
 	function resetBtn(e){
 		validCheck = {...defaultvalidCheck};
+		let carContainer = document.getElementById("carContainer")
+		carContainer.remove();
 		submitbtn(e);
 	}
 
@@ -370,9 +425,17 @@
 			'mercedes' : ['AMG A45s', 'E-class', 'Maybach']	
 		};
 
+		let error_car = document.getElementById('error_cars')
 		if(e.target.value){
 			validCheck.validCar = true;
-		} else validCheck.validCar = false;
+			error_car.style.display = 'none';
+			error_car.border = "";
+
+		} else {
+			validCheck.validCar = false;
+			error_car.style.display = 'block';
+			error_car.border = "2px solid red";
+		}
 
 		console.log(validCheck);
 
@@ -401,7 +464,6 @@
 		});
 		submitbtn();
 	}	
-
 	
 	function checkBoxToggle(e){
 		
@@ -409,8 +471,6 @@
 			if(Array.from(checkBoxElements).filter(ele => ele.checked).length > 0){
 				validCheck.validCarCheckbox = true;
 			} else validCheck.validCarCheckbox = false;
-
-			
 
 			let em = document.getElementById("error_" + e.target.value);
 			let textBoxForModel = document.getElementById("textbox_" + e.target.value);
