@@ -1,0 +1,19 @@
+$primary-color: #cbc9c6;
+// $primary-color : #333;
+
+$secondary-color: #c27426;
+$font-stack: 'Nunito', sans-serif;
+
+@function set-text-color($color){
+    @if(lightness($color) > 70){
+        @return #333;
+    } @else {
+        @return #fff;
+    }
+}
+
+//set bg and text color
+@mixin set-background($color) {
+    background-color: $color;
+    color: set-text-color($color);
+}
