@@ -3,10 +3,10 @@ $(document).ready(() => {
     const maxDate = '2024-12-31';
     const minDate = '2022-12-31';
     $("input#datePicker").val(currentDate);
-    $("input#datePicker").prop('min', minDate);
-    $("input#datePicker").prop('max', maxDate);
+    // $("input#datePicker").prop('min', minDate);
+    // $("input#datePicker").prop('max', maxDate);
 
-    $("input#datePicker").on('keypress', (e)=>{
+    $("input#datePicker").on('keydown', (e)=>{
         e.preventDefault()
     })
     
@@ -21,7 +21,7 @@ $(document).ready(() => {
     $("button#pause").click(() => {
         if(!isPaused){
             isPaused = true;
-            elaspedTime = Date.now() - startTime;
+            elaspedTime = "00:00:00";
             clearInterval(intervalTime)
         }
     });
