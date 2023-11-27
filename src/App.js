@@ -1,23 +1,31 @@
-import logo from './logo.svg';
 import './App.css';
+import {BrowserRouter as Router, Route, Navigate, Routes} from "react-router-dom";
+import Home from './pages/Home';
+import Details from './pages/Details';
+
+import {getWeatherData} from './api/getWeatherData'
+import { useEffect, useState } from 'react';
 
 function App() {
+  const [data, setData] = useState(null);
+  
+  useEffect(() => {
+    getWeatherData().then((apiData) => setData(apiData));
+  }, [])
+
+  // useEffect(() => {
+  //   console.log(data)
+  // }, [data])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        <Routes>
+          <Route path='/' element={<Navigate to="/home" />}/>
+          <Route path='/home' element={< Home data={data} />} />
+          <Route path='/:day' element={< Details data={data}/>} />
+        </Routes>
+      </Router>
     </div>
   );
 }
